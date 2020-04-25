@@ -1,0 +1,23 @@
+{
+  "name": "@rex/router",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test"
+  },
+  "dependencies": {
+    "@rex/core": "^0.1.0"
+  },
+  "author": "Aftab Alam",
+  "module": "dist/router.esm.js"
+}
