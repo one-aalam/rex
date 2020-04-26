@@ -12,6 +12,7 @@
     "start": "lerna run start --parallel",
     "build": "lerna run build --reject-cycles",
     "test": "lerna run test --reject-cycles",
+    "test:coverage": "lerna run test:coverage",
     "watch": "lerna run watch --parallel --reject-cycles",
     "bootstrap": "lerna bootstrap --reject-cycles --force-local",
     "postinstall": "npm run bootstrap",
@@ -46,5 +47,14 @@
     "tsdx": "^0.13.2",
     "tslib": "^1.11.1",
     "typescript": "^3.8.3"
-  }
+  },
+  "keywords": [
+    "monorepo",
+    "workspaces",
+    "lerna",
+    "typescript",
+    "cypress",
+    "jest",
+    "testing"
+  ]
 }

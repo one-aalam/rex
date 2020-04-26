@@ -13,7 +13,9 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "test": "tsdx test"
+    "lint": "tsdx lint",
+    "test": "tsdx test",
+    "test:coverage": "CI=true tsdx test --color --coverage"
   },
   "dependencies": {
     "@rex/core": "^0.1.0"
