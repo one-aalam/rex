@@ -1,21 +1,60 @@
 import { DepX } from './dep';
 
 export function reactive(obj: { [x: string]: any; }, notifier: (key: string | number, value: string | number ) => void) {
-    Object.keys(obj).forEach((key) => obj.hasOwnProperty(key) && makeReactive(obj, key, notifier))
+    const Dep: { [x: string]: any; } = {
+        target: null
+    }
+    Object.keys(obj).forEach((key) => {
+        console.log(obj, key, obj[key]);
+        return obj.hasOwnProperty(key) && typeof obj[key] === 'function' ?
+            makeComputed(obj, key, Dep) : makeReactive(obj, key, notifier, Dep)
+    });
     return obj
 }
 
-export const makeReactive = (obj: { [x: string]: any; }, key: string | number, notifier: (key: string | number, value: string | number) => void ) =>  {
+export const makeReactive = (
+    obj: { [x: string]: any; },
+    key: string | number,
+    notifier: (key: string | number, value: string | number) => void,
+    Dep: any ) =>  {
     let value = obj[key];
+    let deps: any[] = [];
     Object.defineProperty(obj, key, {
         get() {
+            if (Dep.target) {
+                if (!deps.includes(Dep.target)) {
+                    deps.push(Dep.target)
+                }
+            }
             return value
         },
         set(newValue) {
             if (newValue !== value) {
                 value = newValue
+                if (deps.length) {
+                    deps.forEach(notifier)
+                }
                 notifier(key, value);
             }
+        },
+    })
+}
+
+
+
+export const makeComputed = (
+    obj: { [x: string]: any; },
+    key: string | number,
+    Dep: any ) =>  {
+    const computeFunc = obj[key];
+    Object.defineProperty(obj, key, {
+        get() {
+            if (!Dep.target) {
+                Dep.target = key
+            }
+            const value = computeFunc.call(obj);
+            Dep.target = null;
+            return value
         },
     })
 }
