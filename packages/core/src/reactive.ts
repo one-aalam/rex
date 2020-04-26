@@ -1,11 +1,12 @@
 import { DepX } from './dep';
 
-export function reactive(obj: { [x: string]: any; }, notifier: (key: string | number, value: string | number ) => void) {
+export function reactive(
+    obj: { [x: string]: any; },
+    notifier: (key: string | number, value: string | number ) => void) {
     const Dep: { [x: string]: any; } = {
         target: null
     }
     Object.keys(obj).forEach((key) => {
-        console.log(obj, key, obj[key]);
         return obj.hasOwnProperty(key) && typeof obj[key] === 'function' ?
             makeComputed(obj, key, Dep) : makeReactive(obj, key, notifier, Dep)
     });
@@ -35,6 +36,7 @@ export const makeReactive = (
                     deps.forEach(notifier)
                 }
                 notifier(key, value);
+                Dep.cache = null;
             }
         },
     })
@@ -46,15 +48,18 @@ export const makeComputed = (
     obj: { [x: string]: any; },
     key: string | number,
     Dep: any ) =>  {
+    Dep.cache = null;
     const computeFunc = obj[key];
     Object.defineProperty(obj, key, {
         get() {
             if (!Dep.target) {
                 Dep.target = key
             }
-            const value = computeFunc.call(obj);
+            if (!Dep.cache) {
+                Dep.cache = computeFunc.call(obj)
+            }
             Dep.target = null;
-            return value
+            return Dep.cache;
         },
     })
 }
