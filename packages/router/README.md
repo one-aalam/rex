@@ -1,6 +1,12 @@
-# TSDX Bootstrap
+# @rex/router
 
 This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+The router should ...
+- be lightweight
+- support hash typed URLs like http://site.com#products/list work with the History API
+- provide easy-to-use API
+- not run automatically
+- listen for changes only if we want to
 
 ## Local Development
 

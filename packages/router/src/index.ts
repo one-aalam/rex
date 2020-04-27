@@ -1,5 +1,5 @@
 import { Route } from './types';
-import { TICKTIME, NAV_SELECTOR } from './constants';
+import { NAV_SELECTOR, EVT_HISTORY_PUSH } from './constants';
 import { extractUrlParams, addRoute, navigateHash, navigateHistory, noop, isRelative } from './utils';
 
 
@@ -8,10 +8,10 @@ export const createRouter: any = (options: any = { hash: false, routes: [], notF
   let lastPathname: string;
   let notFoundComponent:any = options.notFound || noop;
 
-  const navigate = (fragment: string) => options.hash ? navigateHash(fragment) : navigateHistory(fragment);
+  const navigate = (fragment: string) => !options.hash && !!(history.pushState) ? navigateHistory(fragment) : navigateHash(fragment) ;
   const getPath = () => {
     const { hash, pathname } = window.location;
-    return (options.hash ? hash : pathname).replace('#', '') ;
+    return (options.hash ? hash : (pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1): pathname)).replace('#', '') ;
   }
   const onLinkClickHandler = (e: any) => {
     const { target } = e;
@@ -25,8 +25,13 @@ export const createRouter: any = (options: any = { hash: false, routes: [], notF
   }
 
   const checkRoutes = () => {
-    const pathname = getPath();
-
+    const pathname = getPath(); console.log(pathname)
+    if (options.before && typeof options.before === 'function') {
+      options.before({
+        from: lastPathname,
+        to: pathname
+      })
+    }
     if (lastPathname === pathname) {
       return
     }
@@ -44,6 +49,12 @@ export const createRouter: any = (options: any = { hash: false, routes: [], notF
     const urlParams = extractUrlParams(currentRoute, pathname)
 
     currentRoute.component(urlParams);
+    if (options.after && typeof options.after === 'function') {
+      options.after({
+        path: lastPathname,
+        params: urlParams
+      })
+    }
   }
 
   const initHashRouting = () => {
@@ -54,7 +65,8 @@ export const createRouter: any = (options: any = { hash: false, routes: [], notF
 
   const initHistoryRouting = () => {
     checkRoutes();
-    window.setInterval(checkRoutes, TICKTIME)
+    document.addEventListener(EVT_HISTORY_PUSH, checkRoutes, false);
+    window.onpopstate = checkRoutes;
   }
 
   const init = () => options.hash ? initHashRouting() : initHistoryRouting();

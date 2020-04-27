@@ -1,4 +1,4 @@
-import { ROUTE_PARAMETER_REGEXP, URL_FRAGMENT_REGEXP } from './constants';
+import { ROUTE_PARAMETER_REGEXP, URL_FRAGMENT_REGEXP, EVT_HISTORY_PUSH } from './constants';
 import { Route, RouteParams, RouteComponent } from './types';
 
 export const extractUrlParams = (route: Route, windowHash: string) => {
@@ -38,9 +38,23 @@ export const addRoute = (fragment: string, component: RouteComponent) => {
     }
 }
 
+// export const clearSlashes = (path: string) => path.toString().replace(new RegExp(`/\\/$/`), '').replace(new RegExp(`/^\\//`), '');
+
 export const navigateHash = (fragment: string) => window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + fragment;
-export const navigateHistory = (path: string) => window.history.pushState(null, '', path);
+export const navigateHistory = (path: string) => pushState(null, '', path);
 
 export const isRelative = (link: string) => !link.startsWith('http') || !link.startsWith('www') || !link.startsWith('//')
 
 export const noop = () => {}
+
+export const pushState = (state: any, title: string, url: string) => {
+  const pushEvent = new CustomEvent(EVT_HISTORY_PUSH, {
+      detail: {
+          state,
+          title,
+          url
+      }
+  });
+  window.history.pushState(state, title, url);
+  document.dispatchEvent(pushEvent);
+}
