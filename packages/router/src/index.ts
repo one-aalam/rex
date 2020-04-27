@@ -1,6 +1,6 @@
 import { Route } from './types';
 import { TICKTIME, NAV_SELECTOR } from './constants';
-import { extractUrlParams, addRoute, navigateHash, navigateHistory, noop } from './utils';
+import { extractUrlParams, addRoute, navigateHash, navigateHistory, noop, isRelative } from './utils';
 
 
 export const createRouter: any = (options: any = { hash: false, routes: [], notFound: () => {} }) => {
@@ -14,10 +14,13 @@ export const createRouter: any = (options: any = { hash: false, routes: [], notF
     return (options.hash ? hash : pathname).replace('#', '') ;
   }
   const onLinkClickHandler = (e: any) => {
-    e.preventDefault();
     const { target } = e;
     if (target && target.matches(NAV_SELECTOR)) {
-      navigate(target.attributes.href.value)
+      const navTo = target.attributes.href.value;
+      if (isRelative(navTo)) {
+        e.preventDefault();
+        navigate(target.attributes.href.value)
+      }
     }
   }
 

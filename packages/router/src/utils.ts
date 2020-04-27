@@ -41,4 +41,6 @@ export const addRoute = (fragment: string, component: RouteComponent) => {
 export const navigateHash = (fragment: string) => window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + fragment;
 export const navigateHistory = (path: string) => window.history.pushState(null, '', path);
 
+export const isRelative = (link: string) => !link.startsWith('http') || !link.startsWith('www') || !link.startsWith('//')
+
 export const noop = () => {}
